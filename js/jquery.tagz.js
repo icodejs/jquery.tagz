@@ -1,4 +1,12 @@
-// Delicious style tag text box with tag list.
+
+/**
+ * jQuery Tagz Plugin (Delicious style tag textbox with tag list)
+ * https://github.com/icodejs/jquery.tagz
+ *
+ * @version 1.0
+ * @copyright Copyright (C) 2012 Jay Esco. All rights reserved.
+ * @license MIT License
+ */
 
 (function($, undefined) {
   'use strict';

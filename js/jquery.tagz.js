@@ -28,9 +28,11 @@
 
     return this.each(function() {
       var
-      $this     = $(this),
-      $tagzWrap = $('<div class="tagz-wraps clearfix" />'),
-      $tagz     = $('<div class="tagz" />');
+      $this          = $(this),
+      $tagzWrap      = $('<div class="tagz-wraps clearfix" />'),
+      $tagzContainer = $('<div class="tagz" />'),
+      $tagzArr       = $('<input type="hidden" />'),
+      tagzArr        = [];
 
       // 1. set applied class
       if ($this.is('.applied')) {
@@ -44,7 +46,31 @@
       $this.wrap($tagzWrap);
 
       // 3. Add tag container
-      $this.after($tagz);
+      $this.after($tagzArr);
+      $this.after($tagzContainer);
+
+      // 4. Detect enter click
+      $this.on('keydown', function (e) {
+        var keycode = e.keyCode || e.which, tag = '';
+
+        if (keycode === 13) {
+          e.preventDefault();
+          tag = $this.val();
+
+          if (tag.length) { // validate / alphetise / already contains etc
+            tagzArr.push(tag);
+
+            // 5. Create an array of tags in a hidden input control to be accessed on save.
+            $tagzArr.val(JSON.stringify(tagzArr));
+
+
+            console.log('enter was clicked. Value is: ' + tag);
+            console.log(JSON.stringify(tagzArr));
+
+            $this.val('');
+          }
+        }
+      });
     });
 
   };

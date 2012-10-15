@@ -1,6 +1,6 @@
 // Delicious style tag text box with tag list.
 
-(function($) {
+(function($, undefined) {
   'use strict';
 
   $.fn.tagz = function(options) {

@@ -1,30 +1,30 @@
 
 (function($) {
-
+  'use strict';
   // Delicious style tag text box with tag list.
 
   $.fn.tagz = function(options) {
+
     if (!this.length) return this;
 
-    /**
-     * TODO:
-     * -----
-     * - Detect enter click when textbox is in focus.
-     * - Insert container for newly created tags.
-     * - Create an array of tags in a hidden input control to be accessed on save.
-     * - Wrap both the input and tag container in a wrapper element.
-     * - Make all newly added tags deletable. (one by one and all at once)
-     * - Make it possible to supply the plugin with an array of tags on init.
-     * - Alphabetise tags each time one is entered.
-     * - Basic input validation.
-     * - Make tag layout fluid.
-     * - Allow certain classes to be passed through to the tags so they can be
-     *   style by thing like twitter bootstrap
-     * - Add applied flag so plugin container or input so that this can be tested
-     *   against so that the plugin cannot be applied twice.
-     */
+    var
+    opts           = $.extend(true, {}, $.fn.tagz.defaults, options),
+    $tagzWrap      = $('<div />').addClass('tagz-wraps clearfix'),
+    $tagzContainer = $('<' + opts.tagOuterWrap + ' />').addClass('tagz'),
+    $tagzArr       = $('<input type="hidden" />').addClass('savedTags'),
+    tagzArr        = [];
 
-    var opts = $.extend(true, {}, $.fn.tagz.defaults, options);
+
+    function removeTag(e) {
+      e.preventDefault();
+
+      var $container = $(e.currentTarget).closest(opts.tagInnerWrap);
+      $container.fadeOut(opts.fadeSpeed, function () {
+        var $this = $(this).remove(), t = $.trim($this.find('span').text());
+        removeItem(tagzArr, t);
+        $tagzArr.val(JSON.stringify(tagzArr.sort()));
+      });
+    }
 
 
     function contains(arr, tag) {
@@ -73,85 +73,72 @@
     }
 
 
+    function setupRemoveClickHandler(tags, $container, fn) {
+      var i, len = tags.length, tag = '';
+
+      for (i = 0; i < len; i += 1) {
+        tag = tags[i];
+        $('<' + opts.tagInnerWrap +  '/>')
+          .html('<span><a href="#" title="close"><img src="' + opts.closeImage + '" class="close" /></a></span>')
+          .addClass(opts.tagClass)
+          .hide()
+            .find('a')
+              .on('click', fn)
+          .end()
+            .find('span')
+              .prepend(tag)
+          .end()
+          .appendTo($container)
+          .fadeIn(opts.fadeSpeed);
+
+        tagzArr.push(tag);
+        $tagzArr.val(JSON.stringify(tagzArr.sort()));
+      }
+    }
+
+
     return this.each(function() {
-      var
-      $this          = $(this),
-      $tagzWrap      = $('<div class="tagz-wraps clearfix" />'),
-      $tagzContainer = $('<ul class="tagz" />'),
-      $tagzArr       = $('<input type="hidden" />'),
-      tagzArr        = [],
-      fadeSpeed      = 250;
+      var $this = $(this);
 
       if ($this.is('.applied')) return this;
 
-      // 1. set applied class
       $this
         .addClass('applied')
-        .wrap($tagzWrap) // 2. wrap text box in a container
-        .after($tagzArr) // 3. add tag container
-        .after($tagzContainer);
+        .wrap($tagzWrap)
+        .after($tagzArr)
+        .after($tagzContainer)
+        .on('keydown', function (e) {
+          var keycode = e.keyCode || e.which, tag = '';
+
+          if (keycode === 13) {
+            e.preventDefault();
+            tag = cleanTag($this);
+
+            if (tag.length > 1 || !contains(tagzArr, tag)) {
+              setupRemoveClickHandler([tag], $tagzContainer, removeTag);
+              $this.val('');
+            }
+          }
+        });
+
+      if (opts.tags.length) {
+        setupRemoveClickHandler(opts.tags, $tagzContainer, removeTag);
+      }
+
+    });
 
 
-      $this.on('keydown', function (e) { // 4. Detect enter click
-        var keycode = e.keyCode || e.which, tag = '', $tagTmp;
+  }; // end plugin
 
-        if (keycode !== 13) return; // 5. only interested in enter click
-
-        e.preventDefault();
-
-        tag = cleanTag($this);
-
-        if (tag.length <= 1 || contains(tagzArr, tag)) return;
-
-        tagzArr.push(tag);
-
-        $tagTmp = $('<li class="tag"><span><a href="#" title="close">x</a></span></li>')
-          .hide()
-          .find('a')
-            .on('click', function (e) {
-              e.preventDefault();
-
-              $tagTmp.fadeOut(250, function () {
-                var t = $.trim($tagTmp.find('span').text().split('x')[0]); // x will be replaced with an image
-                removeItem(tagzArr, t);
-                $tagTmp.remove();
-                console.log(JSON.stringify(tagzArr.sort()));
-              });
-
-            })
-          .end();
-
-
-
-        // 6. Create an array of tags in a hidden input control to be
-        // accessed on save.
-        $tagzArr.val(JSON.stringify(tagzArr.sort()));
-
-        // refactor when done as you a recreating  JQ objects for every
-        // newly added tag.
-
-        $tagTmp
-          .find('span')
-            .prepend(tag)
-          .end()
-          .appendTo($tagzContainer)
-          .fadeIn(250);
-
-        console.log('enter was clicked. Value is: ' + tag);
-        console.log(JSON.stringify(tagzArr.sort()));
-        console.log('====================================================');
-
-        $this.val('');
-      });
-
-
-    }); // end plugin
-
-  };
 
   $.fn.tagz.defaults = {
-    wrapTextBox : true,
-    tags        : []
+    wrapTextBox  : true,
+    tags         : ['bmx', 'flatland', 'bike', 'crazy'],
+    tagOuterWrap : 'ul',
+    tagInnerWrap : 'li',
+    closeImage   : 'img/glyphicons_207_remove_2.png',
+    fadeSpeed    : 250,
+    tagClass     : 'tag'
   };
 
 } (jQuery));

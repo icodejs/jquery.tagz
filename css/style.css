@@ -14,7 +14,7 @@ body {
   height: 30px;
 }
 .tagz .tag span {
-  background-color: #ddd;
+  background-color: #eee;
   padding: 5px 5px 7px;
   margin-top: 5px;
   -webkit-border-radius: 3px;
@@ -25,12 +25,15 @@ body {
 .tagz .tag a {
   text-decoration: none;
   color: #fff;
-  background-color: #666;
+  background-color: #ccc;
   padding: 1px 4px 3px;
   margin-left: 5px;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;
+}
+.tagz .tag .close {
+  width: 7px;
 }
 .clearfix {
   display: inline-block;

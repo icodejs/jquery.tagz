@@ -26,52 +26,126 @@
 
     var opts = $.extend(true, {}, $.fn.tagz.defaults, options);
 
+
+    function contains(arr, tag) {
+      var i, len = arr.length;
+      if (len) {
+        for (i = 0; i < len; i += 1) {
+          if (arr[i] === tag) return true;
+        }
+      }
+      return false;
+    }
+
+
+    function escapeHTML(str) {
+      var entityMap = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': '&quot;',
+        "'": '&#39;',
+        "/": '&#x2F;'
+      };
+      return String(str).replace(/[&<>"'\/]/g, function (s) {
+        return entityMap[s];
+      });
+    }
+
+
+    function cleanTag($dirty) {
+      var clean;
+      clean = $dirty.val();
+      clean = $.trim(clean);
+      clean = clean.toLowerCase();
+      clean = escapeHTML(clean);
+      return clean;
+    }
+
+
+    function removeItem(arr, tag) {
+      var i, len = arr.length;
+      for (i = 0; i < len; i += 1) {
+        if (arr[i] === tag) {
+          arr.splice(i, 1);
+        }
+      }
+    }
+
+
     return this.each(function() {
       var
       $this          = $(this),
       $tagzWrap      = $('<div class="tagz-wraps clearfix" />'),
-      $tagzContainer = $('<div class="tagz" />'),
+      $tagzContainer = $('<ul class="tagz" />'),
       $tagzArr       = $('<input type="hidden" />'),
-      tagzArr        = [];
+      tagzArr        = [],
+      fadeSpeed      = 250;
+
+      if ($this.is('.applied')) return this;
 
       // 1. set applied class
-      if ($this.is('.applied')) {
-        return this;
-      }
-      else {
-        $this.addClass('applied');
-      }
-
-      // 2. wrap text box in a container
-      $this.wrap($tagzWrap);
-
-      // 3. Add tag container
-      $this.after($tagzArr);
-      $this.after($tagzContainer);
-
-      // 4. Detect enter click
-      $this.on('keydown', function (e) {
-        var keycode = e.keyCode || e.which, tag = '';
-
-        if (keycode === 13) {
-          e.preventDefault();
-          tag = $this.val();
-
-          if (tag.length) { // validate / alphetise / already contains etc
-            tagzArr.push(tag);
-
-            // 5. Create an array of tags in a hidden input control to be accessed on save.
-            $tagzArr.val(JSON.stringify(tagzArr));
+      $this
+        .addClass('applied')
+        .wrap($tagzWrap) // 2. wrap text box in a container
+        .after($tagzArr) // 3. add tag container
+        .after($tagzContainer);
 
 
-            console.log('enter was clicked. Value is: ' + tag);
-            console.log(JSON.stringify(tagzArr));
+      $this.on('keydown', function (e) { // 4. Detect enter click
+        var keycode = e.keyCode || e.which, tag = '', $tagTmp;
 
-            $this.val('');
-          }
-        }
+        if (keycode !== 13) return; // 5. only interested in enter click
+
+        e.preventDefault();
+
+        tag = cleanTag($this);
+
+        if (tag.length <= 1 || contains(tagzArr, tag)) return;
+
+        tagzArr.push(tag);
+
+        $tagTmp = $('<li class="tag"><span><a href="#" title="close">x</a></span></li>')
+          .hide()
+          .find('a')
+            .on('click', function (e) {
+              e.preventDefault();
+
+              $tagTmp.fadeOut(250, function () {
+                var t = $.trim($tagTmp.find('span').text().split('x')[0]); // x will be replaced with an image
+                removeItem(tagzArr, t);
+                $tagTmp.remove();
+                console.log(JSON.stringify(tagzArr.sort()));
+              });
+
+            })
+          .end();
+
+
+
+        // 6. Create an array of tags in a hidden input control to be
+        // accessed on save.
+        $tagzArr.val(JSON.stringify(tagzArr.sort()));
+
+        // refactor when done as you a recreating  JQ objects for every
+        // newly added tag.
+
+        $tagTmp
+          .find('span')
+            .prepend(tag)
+          .end()
+          .appendTo($tagzContainer)
+          .fadeIn(250);
+
+        console.log('enter was clicked. Value is: ' + tag);
+        console.log(JSON.stringify(tagzArr.sort()));
+        console.log('====================================================');
+
+        $this.val('');
       });
-    });
+
+
+    }); // end plugin
 
   };
 

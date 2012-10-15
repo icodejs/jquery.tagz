@@ -40,20 +40,20 @@
             e.preventDefault();
             tag = cleanTag($this);
 
-            if (tag.length > 1 || !contains(tagzArr, tag)) {
-              setupRemoveClickHandler([tag], $tagzContainer, removeTag);
+            if (tag.length > 1 && !contains(tagzArr, tag)) {
+              setupRemoveClickHandler([tag], $tagzContainer, removeTagHandler);
               $this.val('');
             }
           }
         });
 
       if (opts.tags.length) {
-        setupRemoveClickHandler(opts.tags, $tagzContainer, removeTag);
+        setupRemoveClickHandler(opts.tags, $tagzContainer, removeTagHandler);
       }
     });
 
 
-    function removeTag(e) {
+    function removeTagHandler(e) {
       e.preventDefault();
 
       var $container = $(e.currentTarget).closest(opts.tagInnerWrap);

@@ -77,16 +77,26 @@
 
 
     function escapeHTML(str) {
-      var entityMap = {
+      var entityMapEscape = {
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': '&quot;',
         "'": '&#39;',
         "/": '&#x2F;'
-      };
+      },
+      entityMapRemove = {
+        "&": '',
+        "<": '',
+        ">": '',
+        '"': '',
+        "'": '',
+        "/": ''
+      },
+      map = opts.escape ? entityMapEscape : entityMapRemove;
+
       return String(str).replace(/[&<>"'\/]/g, function (s) {
-        return entityMap[s];
+        return map[s];
       });
     }
 
@@ -94,9 +104,9 @@
     function cleanTag($dirty) {
       var clean;
       clean = $dirty.val();
-      clean = $.trim(clean);
       clean = clean.toLowerCase();
       clean = escapeHTML(clean);
+      clean = $.trim(clean);
       return clean;
     }
 
@@ -143,7 +153,8 @@
     tagInnerWrap : 'li',
     closeImage   : 'img/glyphicons_207_remove_2.png',
     fadeSpeed    : 250,
-    tagClass     : 'tag'
+    tagClass     : 'tag',
+    escapeInput  : false
   };
 
 } (jQuery));

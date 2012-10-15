@@ -21,7 +21,8 @@ Type your tag and press return.
       tagInnerWrap : 'li',
       closeImage   : 'img/close.png',
       fadeSpeed    : 250,
-      tagClass     : 'tag'
+      tagClass     : 'tag',
+      escapeInput  : false
     });
   });
 </script>

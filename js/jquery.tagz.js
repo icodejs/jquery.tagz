@@ -1,7 +1,7 @@
+// Delicious style tag text box with tag list.
 
 (function($) {
   'use strict';
-  // Delicious style tag text box with tag list.
 
   $.fn.tagz = function(options) {
 
@@ -13,6 +13,36 @@
     $tagzContainer = $('<' + opts.tagOuterWrap + ' />').addClass('tagz'),
     $tagzArr       = $('<input type="hidden" />').addClass('savedTags'),
     tagzArr        = [];
+
+
+    return this.each(function() {
+      var $this = $(this);
+
+      if ($this.is('.applied')) return this;
+
+      $this
+        .addClass('applied')
+        .wrap($tagzWrap)
+        .after($tagzArr)
+        .after($tagzContainer)
+        .on('keydown', function (e) {
+          var keycode = e.keyCode || e.which, tag = '';
+
+          if (keycode === 13) {
+            e.preventDefault();
+            tag = cleanTag($this);
+
+            if (tag.length > 1 || !contains(tagzArr, tag)) {
+              setupRemoveClickHandler([tag], $tagzContainer, removeTag);
+              $this.val('');
+            }
+          }
+        });
+
+      if (opts.tags.length) {
+        setupRemoveClickHandler(opts.tags, $tagzContainer, removeTag);
+      }
+    });
 
 
     function removeTag(e) {
@@ -96,43 +126,10 @@
       }
     }
 
-
-    return this.each(function() {
-      var $this = $(this);
-
-      if ($this.is('.applied')) return this;
-
-      $this
-        .addClass('applied')
-        .wrap($tagzWrap)
-        .after($tagzArr)
-        .after($tagzContainer)
-        .on('keydown', function (e) {
-          var keycode = e.keyCode || e.which, tag = '';
-
-          if (keycode === 13) {
-            e.preventDefault();
-            tag = cleanTag($this);
-
-            if (tag.length > 1 || !contains(tagzArr, tag)) {
-              setupRemoveClickHandler([tag], $tagzContainer, removeTag);
-              $this.val('');
-            }
-          }
-        });
-
-      if (opts.tags.length) {
-        setupRemoveClickHandler(opts.tags, $tagzContainer, removeTag);
-      }
-
-    });
-
-
   }; // end plugin
 
 
   $.fn.tagz.defaults = {
-    wrapTextBox  : true,
     tags         : ['bmx', 'flatland', 'bike', 'crazy'],
     tagOuterWrap : 'ul',
     tagInnerWrap : 'li',

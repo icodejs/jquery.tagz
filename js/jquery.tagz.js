@@ -27,8 +27,12 @@
     var opts = $.extend(true, {}, $.fn.tagz.defaults, options);
 
     return this.each(function() {
-      var $this = $(this);
+      var
+      $this     = $(this),
+      $tagzWrap = $('<div class="tagz-wraps clearfix" />'),
+      $tagz     = $('<div class="tagz" />');
 
+      // 1. set applied class
       if ($this.is('.applied')) {
         return this;
       }
@@ -36,7 +40,11 @@
         $this.addClass('applied');
       }
 
-      console.log($this);
+      // 2. wrap text box in a container
+      $this.wrap($tagzWrap);
+
+      // 3. Add tag container
+      $this.after($tagz);
     });
 
   };

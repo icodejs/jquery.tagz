@@ -11,23 +11,48 @@
 (function($, undefined) {
   'use strict';
 
+  $.fn.tagzApplied = false;
+
   $.fn.tagz = function(options) {
 
     if (!this.length) return this;
 
     var
-    opts           = $.extend(true, {}, $.fn.tagz.defaults, options),
-    $tagzWrap      = $('<div />').addClass('tagz-wraps clearfix'),
-    $tagzContainer = $('<' + opts.tagOuterWrap + ' />').addClass('tagz'),
-    $tagzArr       = $('<input type="hidden" />').addClass('savedTags'),
-    tagzArr        = [];
+    $tagzWrap,
+    $tagzContainer,
+    $tagzArr,
+    tagzArr = [],
+    opts = $.extend(true, {}, $.fn.tagz.defaults, options);
+
+    // Stop plugin from being initialised twice but allow defaults to be updated.
+    if (!$.fn.tagzApplied) {
+      $tagzWrap      = $('<div />').addClass('tagz-wrap');
+      $tagzContainer = $('<' + opts.tagOuterWrap + ' />').addClass('tagz clearfix');
+      $tagzArr       = $('<input type="hidden" />').addClass('savedTags');
+    }
+    else if (opts.resetIfApplied) {
+      $tagzWrap      = $('.tagz-wrap');
+      $tagzContainer = $('.tagz');
+      $tagzArr       = $('.savedTags');
+    }
+    else {
+      return this;
+    }
 
 
     return this.each(function() {
       var $this = $(this);
 
-      if ($this.is('.applied')) return this;
+      $.fn.tagzApplied = $this.is('.applied');
 
+      if ($.fn.tagzApplied && opts.resetIfApplied) {
+        reset($this, $tagzContainer, $tagzArr);
+      }
+      init($this);
+    });
+
+
+    function init($this) {
       $this
         .addClass('applied')
         .wrap($tagzWrap)
@@ -50,7 +75,38 @@
       if (opts.tags.length) {
         setupRemoveClickHandler(opts.tags, $tagzContainer, removeTagHandler);
       }
-    });
+    }
+
+
+    function setupRemoveClickHandler(tags, $container, fn) {
+      var i, len = tags.length, tag = '';
+
+      for (i = 0; i < len; i += 1) {
+        tag = tags[i];
+        $('<' + opts.tagInnerWrap +  '/>')
+          .html('<span><a href="#" title="close"><img src="' + opts.closeImage + '" class="' + opts.closeClass + '" /></a></span>')
+          .addClass(opts.tagClass)
+          .hide()
+            .find('a')
+              .on('click', fn)
+          .end()
+            .find('span')
+              .prepend(tag)
+          .end()
+          .appendTo($container)
+          .fadeIn(opts.fadeSpeed);
+
+        tagzArr.push(tag);
+        $tagzArr.val(JSON.stringify(tagzArr.sort()));
+      }
+    }
+
+
+    function reset($this) {
+      $this.unwrap($tagzWrap);
+      $('.tagz').remove();
+      $('.savedTags').remove();
+    }
 
 
     function removeTagHandler(e) {
@@ -121,40 +177,19 @@
     }
 
 
-    function setupRemoveClickHandler(tags, $container, fn) {
-      var i, len = tags.length, tag = '';
-
-      for (i = 0; i < len; i += 1) {
-        tag = tags[i];
-        $('<' + opts.tagInnerWrap +  '/>')
-          .html('<span><a href="#" title="close"><img src="' + opts.closeImage + '" class="close" /></a></span>')
-          .addClass(opts.tagClass)
-          .hide()
-            .find('a')
-              .on('click', fn)
-          .end()
-            .find('span')
-              .prepend(tag)
-          .end()
-          .appendTo($container)
-          .fadeIn(opts.fadeSpeed);
-
-        tagzArr.push(tag);
-        $tagzArr.val(JSON.stringify(tagzArr.sort()));
-      }
-    }
-
   }; // end plugin
 
 
   $.fn.tagz.defaults = {
-    tags         : ['bmx', 'flatland', 'bike', 'crazy'],
-    tagOuterWrap : 'ul',
-    tagInnerWrap : 'li',
-    closeImage   : 'img/glyphicons_207_remove_2.png',
-    fadeSpeed    : 250,
-    tagClass     : 'tag',
-    escapeInput  : false
+    tags           : ['bmx', 'flatland', 'bike', 'crazy'],
+    tagOuterWrap   : 'ul',
+    tagInnerWrap   : 'li',
+    closeImage     : 'img/glyphicons_207_remove_2.png',
+    fadeSpeed      : 250,
+    tagClass       : 'tag',
+    closeClass     : 'close',
+    escapeInput    : false,
+    resetIfApplied : false
   };
 
 } (jQuery));

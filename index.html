@@ -7,8 +7,8 @@
   </head>
   <body>
     <h1>Tagz demo</h1>
-    <input type="text" class="tags"> <br>
-    <button class="save">Save</button>
+    <input type="text" class="tags">
+    <button class="save btn">Save</button>
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="js/jquery.tagz.js"></script>
     <script type="text/javascript">
@@ -17,7 +17,7 @@
         $('.tags').tagz();
         $('.save').on('click', function (e) {
           e.preventDefault();
-          console.log($('.savedTags').val());
+          alert($('.savedTags').val());
         })
         console.timeEnd('duration');
       });

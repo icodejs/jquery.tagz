@@ -17,12 +17,14 @@ Type your tag and press return.
   $(function () {
     $('input.tags').tagz({
       tags         : ['bmx', 'flatland', 'bike', 'crazy'],
-      tagOuterWrap : 'ul',
-      tagInnerWrap : 'li',
-      closeImage   : 'img/close.png',
-      fadeSpeed    : 250,
-      tagClass     : 'tag',
-      escapeInput  : false
+      tagOuterWrap   : 'ul',
+      tagInnerWrap   : 'li',
+      closeImage     : '',
+      fadeSpeed      : 250,
+      tagClass       : 'tag',
+      closeClass     : 'close',
+      escapeInput    : false,
+      resetIfApplied : false
     });
   });
 </script>

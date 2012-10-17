@@ -25,39 +25,6 @@ input[type="text"] {
 
   width: 200px;
 }
-/*.tagz-wrap {
-  border: 1px solid;
-}
-.tagz {
-  list-style-type: none;
-  margin: 10px 0;
-  padding: 0;
-}
-.tagz li {
-  height: 30px;
-}
-.tagz .tag span {
-  background-color: #eee;
-  padding: 5px 5px 7px;
-  margin-top: 5px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  font-size: 10px;
-}
-.tagz .tag a {
-  text-decoration: none;
-  color: #fff;
-  background-color: #ccc;
-  padding: 1px 4px 3px;
-  margin-left: 5px;
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
-  border-radius: 2px;
-}
-.tagz .tag .close {
-  width: 7px;
-}*/
 
 .tagz-wrap {
 }

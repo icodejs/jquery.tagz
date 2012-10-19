@@ -18,7 +18,6 @@
     if (!this.length) return this;
 
     var
-    $tagzWrap,
     $tagzContainer,
     $tagzArr,
     tagzArr = [],
@@ -26,12 +25,10 @@
 
     // Stop plugin from being initialised twice but allow defaults to be updated.
     if (!$.fn.tagzApplied) {
-      $tagzWrap      = $('<div />').addClass('tagz-wrap');
       $tagzContainer = $('<' + opts.tagOuterWrap + ' />').addClass('tagz clearfix');
       $tagzArr       = $('<input type="hidden" />').addClass('savedTags');
     }
     else if (opts.resetIfApplied) {
-      $tagzWrap      = $('.tagz-wrap');
       $tagzContainer = $('.tagz');
       $tagzArr       = $('.savedTags');
     }
@@ -55,7 +52,6 @@
     function init($this) {
       $this
         .addClass('applied')
-        .wrap($tagzWrap)
         .after($tagzArr)
         .after($tagzContainer)
         .on('keydown', function (e) {
@@ -103,7 +99,6 @@
 
 
     function reset($this) {
-      $this.unwrap($tagzWrap);
       $('.tagz').remove();
       $('.savedTags').remove();
     }
